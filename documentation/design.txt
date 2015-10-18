@@ -1,0 +1,107 @@
+1. Build rock paper scissors plants zombies (spock & lizard changed by my 1st grader)
+spock = plants
+lizard = zombies
+
+---------------------------------------------------------------------
+GAME LOGIC
+
+Who beats who:
+rock = scissors, zombies
+paper = rock, plants
+scissors = paper, zombies
+plants = rock, scissors
+zombies = paper, plants
+
+Store who beats up who in lookup table. 
+$whoBeatsWho["rock"]["scissors"] = true;
+$whoBeatsWho["rock"]["zombies"] = true;
+$whoBeatsWho["paper"]["rock"] = true;
+etc...
+
+Steps for determing winner:
+1) if user = computer ---> Tie
+2) if exists $whoBeatsWho[$userAnswer][$computerAnswer] ---> User wins
+3) else ---> Computer wins
+
+
+---------------------------------------------------------------------
+SUBMISSION FLOW:
+
+Check for user submission
+
+If submission = yes
+ 
+	determine userAnswer from user choice
+	randomly select coputerAnswer
+	
+	determine winner using lookup table and answers
+	
+	insert game details into db
+	
+	pull game stats from db
+	
+End If
+
+Populate view
+
+Return view
+
+
+	
+
+---------------------------------------------------------------------
+DATABASE DESIGN:
+
+Use generic field names - don't refer to humans & computers in persistent store.  Maybe in future we'll have 2 humans, 2 computers, or 2 cats playing each other.
+
+While more than 2 players can play a round, all outcomes of rounds with more than 2 players are determined by comparing 2 player choices.  So hardwire in notion of 2 players into table.
+
+In case we want to pull stats on different players, we'll add player ids to player answers (And to make this slightly more interesting datapull)
+
+Players
+- playerID
+- playerName
+
+PlayedGames
+- p1ID
+- p2ID
+- p1Choice
+- p2choice
+- Outcome ["p1", "p2", "tie"]
+
+
+
+
+
+
+---------------------------------------------------------------------
+DISPLAY:
+
+
+-----------------------
+Left Col:
+Title = "Human Choice"
+5 buttons, one for each choice.
+
+Empty space when no user submission, 
+User choice otherwise
+
+-----------------------
+Center Col: 
+User Wins - Ties - Computer Wins
+
+Empty space when no user submission,
+Winner announcement otherwises
+
+2 column, 5 row option-picked stats table:
+col labels = "Human", "Computer"
+row labels = "Rock", "Paper", etc.
+
+-----------------------
+Right Col:
+
+Title = "Computer Choice"
+
+Empty space when no user submission, 
+Computer random choice otherwise
+
