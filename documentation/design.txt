@@ -1,27 +1,33 @@
-1. Build rock paper scissors plants zombies (spock & lizard changed by my 1st grader)
+Build rock paper scissors plants zombies (spock & lizard changed by my 1st grader)
 spock = plants
 lizard = zombies
+
+
+Since this is a job interview - pick a couple spots throughout application to show how developer choices up front make app more flexibile to maintain and extend.  At same time don't overbuild app.  A delivered project on time better than one gets bloated with bells, whistles, and infinite flexibility.
+
+
 
 ---------------------------------------------------------------------
 GAME LOGIC
 
-Who beats who:
-rock = scissors, zombies
-paper = rock, plants
-scissors = paper, zombies
-plants = rock, scissors
-zombies = paper, plants
 
-Store who beats up who in lookup table. 
-$whoBeatsWho["rock"]["scissors"] = true;
-$whoBeatsWho["rock"]["zombies"] = true;
-$whoBeatsWho["paper"]["rock"] = true;
-etc...
+# Order choices systematically and use algorithm to determine who beats who
+# instead of storing who beats who in lookup table (not a bad choice) or
+# unweildly if/else control scructure
+$optionDisplay[1] = "scissors";
+$optionDisplay[2] = "paper";
+$optionDisplay[3] = "rock";
+$optionDisplay[4] = "plants"
+$optionDisplay[5] = "zombies";
+
+# Each option beats neighbors 1 and 3 slots away.
+i beat (i % 5) + 1  and ((i + 2) % 5) + 1 
 
 Steps for determing winner:
 1) if user = computer ---> Tie
-2) if exists $whoBeatsWho[$userAnswer][$computerAnswer] ---> User wins
+2) p2 = ((p1 % 5) + 1C)  OR (((p1 + 2) % 5) + 1) ---> User wins
 3) else ---> Computer wins
+
 
 
 ---------------------------------------------------------------------
@@ -54,20 +60,26 @@ DATABASE DESIGN:
 
 Use generic field names - don't refer to humans & computers in persistent store.  Maybe in future we'll have 2 humans, 2 computers, or 2 cats playing each other.
 
-While more than 2 players can play a round, all outcomes of rounds with more than 2 players are determined by comparing 2 player choices.  So hardwire in notion of 2 players into table.
+While more than 2 players can play a round, all outcomes of rounds with more than 2 players are determined by comparing 2 player choices.  So hardwiring in notion of 2 players into table.
 
 In case we want to pull stats on different players, we'll add player ids to player answers (And to make this slightly more interesting datapull)
 
-Players
-- playerID
-- playerName
+Player
+- playerID  [int] [auto]
+- playerName [varchar(100)] *Keeping it simple for this exercise
 
-PlayedGames
-- p1ID
-- p2ID
-- p1Choice
-- p2choice
-- Outcome ["p1", "p2", "tie"]
+PlayedGame
+- playedGameID [int] [auto]
+- p1ID [int]
+- p2ID [int]
+- p1Choice [int]
+- p2choice [int]
+- Outcome ["p1", "p2", "tie"] [varchar(3)] (okay to store as strings since hardwireing in 3 possible outcomes for this game)
+
+
+Choice
+- choiceID [int] [auto]
+- choiceName  [int] [auto]
 
 
 
