@@ -1,0 +1,22 @@
+<?php
+namespace AppBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+
+/**
+ * @ORM\Entity
+ */
+class Choice
+{
+    /**
+     * @ORM\Column(type="integer")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    protected $choiceID;
+
+
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+	protected $choiceName;
+}
