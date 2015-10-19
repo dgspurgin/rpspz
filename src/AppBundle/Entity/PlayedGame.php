@@ -41,9 +41,11 @@ class PlayedGame
 
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="integer")
      */
-	protected $outcome;
+	protected $winningPlayerID;
+
+
 
     /**
      * Set playedGameID
@@ -166,26 +168,26 @@ class PlayedGame
     }
 
     /**
-     * Set outcome
+     * Set winningPlayerID
      *
-     * @param string $outcome
+     * @param integer $winningPlayerID
      *
      * @return PlayedGame
      */
-    public function setOutcome($outcome)
+    public function setOutcome($winner)
     {
-        $this->outcome = $outcome;
+        $this->winningPlayerID = $winningPlayerID;
 
         return $this;
     }
 
     /**
-     * Get outcome
+     * Get winningPlayerID
      *
-     * @return string
+     * @return integer
      */
     public function getOutcome()
     {
-        return $this->outcome;
+        return $this->winningPlayerID;
     }
 }
