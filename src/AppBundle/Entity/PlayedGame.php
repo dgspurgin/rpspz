@@ -174,7 +174,7 @@ class PlayedGame
      *
      * @return PlayedGame
      */
-    public function setOutcome($winner)
+    public function setWinningPlayerID($winningPlayerID)
     {
         $this->winningPlayerID = $winningPlayerID;
 
@@ -186,7 +186,7 @@ class PlayedGame
      *
      * @return integer
      */
-    public function getOutcome()
+    public function getWinningPlayerID()
     {
         return $this->winningPlayerID;
     }
