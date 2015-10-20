@@ -37,7 +37,7 @@ class PlayedGame
     /**
      * @ORM\Column(type="integer")
      */
-	protected $p2choice;
+	protected $p2Choice;
 
 
     /**
@@ -144,27 +144,27 @@ class PlayedGame
     }
 
     /**
-     * Set p2choice
+     * Set p2Choice
      *
-     * @param integer $p2choice
+     * @param integer $p2Choice
      *
      * @return PlayedGame
      */
-    public function setP2choice($p2choice)
+    public function setP2choice($p2Choice)
     {
-        $this->p2choice = $p2choice;
+        $this->p2Choice = $p2Choice;
 
         return $this;
     }
 
     /**
-     * Get p2choice
+     * Get p2Choice
      *
      * @return integer
      */
     public function getP2choice()
     {
-        return $this->p2choice;
+        return $this->p2Choice;
     }
 
     /**
