@@ -13,13 +13,134 @@ class DBTestController extends Controller
 {
 
     /**
-     * @Route("/DBTest/playGame/{p1Choice}", name="dbtest")
+     * @Route("/dbtest/stats", name="dbTestStats")
+     */
+    public function statsAction()
+    {
+
+		$p1ID = 1; 		# Human
+		$p2ID = 2; 		# Computer
+
+		$em = $this->getDoctrine()->getManager();
+
+		# P1Win--Tie--P2Win Totals
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE pg.winningPlayerID = :playerID'
+		)->setParameter(':playerID', $p1ID);
+		$p1Wins = $query->getSingleScalarResult();
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE pg.winningPlayerID = :playerID'
+		)->setParameter(':playerID', $p2ID);
+		$p2Wins = $query->getSingleScalarResult();
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE pg.winningPlayerID = 0');
+		$ties = $query->getSingleScalarResult();
+
+
+		# Player 1 Choice Histories
+		$query = $em->createQuery(
+			'SELECT c.choiceID, c.choiceName, COUNT (pg.p1Choice) AS timesChosen
+			FROM AppBundle:Choice c
+			LEFT JOIN AppBundle:PlayedGame pg
+			WHERE c.choiceID = pg.p1Choice AND pg.p1ID = :playerID
+			GROUP BY c.choiceID'
+		)->setParameter(':playerID', $p1ID);
+		$p1ChoiceHistory = $query->getResult();
+		foreach ($p1ChoiceHistory as $index => $row) {
+			$choiceID = $row["choiceID"];
+			$p1ChoiceHistoryIndexedByChoiceID[$choiceID] = $row;
+		}
+
+
+		# Player 2 Choice Histories
+		$query = $em->createQuery(
+			'SELECT c.choiceID, c.choiceName, COUNT (pg.p2Choice) AS timesChosen
+			FROM AppBundle:Choice c
+			LEFT JOIN AppBundle:PlayedGame pg
+			WHERE c.choiceID = pg.p2Choice AND pg.p2ID = :playerID
+			GROUP BY c.choiceID'
+		)->setParameter(':playerID', $p2ID);
+		$p2ChoiceHistory = $query->getResult();
+		foreach ($p2ChoiceHistory as $index => $row) {
+			$choiceID = $row["choiceID"];
+			$p2ChoiceHistoryIndexedByChoiceID[$choiceID] = $row;
+		}
+
+
+
+		# Display choices in conventional order
+		$conventionalChoiceOrder = array(3, 2, 1, 4, 5);
+
+
+
+		# Display Stats
+		$responseString = "";
+
+
+		$totalChoices = 0;
+		$responseString .= <<<EOD
+		Player 1 Choice History:<br>
+EOD;
+		foreach ($conventionalChoiceOrder as $choiceID) {
+			$row = $p1ChoiceHistoryIndexedByChoiceID[$choiceID];
+			$responseString .= <<<EOD
+				choice = {$row["choiceName"]},  total = {$row["timesChosen"]} <br>
+EOD;
+				$totalChoices += $row["timesChosen"];
+		}
+		$responseString .= <<<EOD
+		Total Choices = {$totalChoices}<br>
+		<br>
+EOD;
+
+
+
+		$totalChoices = 0;
+		$responseString .= <<<EOD
+		Player 2 Choice History:<br>
+EOD;
+		foreach ($conventionalChoiceOrder as $choiceID) {
+			$row = $p2ChoiceHistoryIndexedByChoiceID[$choiceID];
+			$responseString .= <<<EOD
+				choice = {$row["choiceName"]},  total = {$row["timesChosen"]} <br>
+EOD;
+				$totalChoices += $row["timesChosen"];
+		}
+		$responseString .= <<<EOD
+		Total Choices = {$totalChoices}<br>
+		<br>
+
+EOD;
+
+
+
+
+		$responseString .= <<<EOD
+Human Wins = {$p1Wins} <br>
+Ties = {$ties} <br>
+Computer Wins = {$p2Wins}<br>
+EOD;
+
+		return new Response($responseString);
+
+
+	}
+
+    /**
+     * @Route("/dbtest/play/{p1Choice}", name="dbTestPlay")
      */
     public function storeGamePlayedAction($p1Choice=1)
     {
 
 		$em = $this->getDoctrine()->getManager();
-
 
 		# If Player table is empty -> seed initial values
 		$record = $this->getDoctrine()->getRepository("AppBundle:Player")
