@@ -142,47 +142,6 @@ EOD;
 
 		$em = $this->getDoctrine()->getManager();
 
-		# If Player table is empty -> seed initial values
-		$record = $this->getDoctrine()->getRepository("AppBundle:Player")
-			->find(1);
-		if (!$record) {
-			$player = new Player();
-			$player->setPlayerName("Human");
-			$em->persist($player);
-
-			$player = new Player();
-			$player->setPlayerName("Computer");
-			$em->persist($player);
-		}
-
-
-		# If Choice table is empty -> seed initial values
-		$record = $this->getDoctrine()->getRepository('AppBundle:Choice')
-			->find(1);
-		if (!$record) {
-			$choice = new Choice();
-			$choice->setChoiceName("Scissors");
-			$em->persist($choice);
-
-			$choice = new Choice();
-			$choice->setChoiceName("Paper");
-			$em->persist($choice);
-
-			$choice = new Choice();
-			$choice->setChoiceName("Rock");
-			$em->persist($choice);
-
-			$choice = new Choice();
-			$choice->setChoiceName("Plants");
-			$em->persist($choice);
-
-			$choice = new Choice();
-			$choice->setChoiceName("Zombies");
-			$em->persist($choice);
-		}
-
-
-
 		# Save a played game
 		$p1ID = 1; 		# Human
 		$p2ID = 2; 		# Computer
