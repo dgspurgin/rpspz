@@ -9,40 +9,21 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-class DBTestController extends Controller
+class StatsController extends Controller
 {
 
     /**
-     * @Route("/dbtest/stats", name="dbTestStats")
+     * @Route("/stats/{p1ID}/{p2ID}", name="stats")
      */
-    public function statsAction()
+    public function statsAction($p1ID = 1, $p2ID = 2)
     {
-
-		$p1ID = 1; 		# Human
-		$p2ID = 2; 		# Computer
 
 		$em = $this->getDoctrine()->getManager();
 
 		# P1Win--Tie--P2Win Totals
-		$query = $em->createQuery(
-			'SELECT COUNT (pg)
-			FROM AppBundle:PlayedGame pg
-			WHERE pg.winningPlayerID = :playerID'
-		)->setParameter(':playerID', $p1ID);
-		$p1Wins = $query->getSingleScalarResult();
-
-		$query = $em->createQuery(
-			'SELECT COUNT (pg)
-			FROM AppBundle:PlayedGame pg
-			WHERE pg.winningPlayerID = :playerID'
-		)->setParameter(':playerID', $p2ID);
-		$p2Wins = $query->getSingleScalarResult();
-
-		$query = $em->createQuery(
-			'SELECT COUNT (pg)
-			FROM AppBundle:PlayedGame pg
-			WHERE pg.winningPlayerID = 0');
-		$ties = $query->getSingleScalarResult();
+		$p1Wins = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal($p1ID);
+		$p2Wins = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal($p2ID);
+		$ties = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal(0);
 
 
 		# Player 1 Choice Histories
@@ -134,61 +115,4 @@ EOD;
 
 	}
 
-    /**
-     * @Route("/dbtest/play/{p1Choice}", name="dbTestPlay")
-     */
-    public function storeGamePlayedAction($p1Choice=1)
-    {
-
-
-
-		# Save a played game
-		$p1ID = 1; 		# Human
-		$p2ID = 2; 		# Computer
-		$p2Choice = 2;
-		$winningPlayerID = "";
-
-		$slot1Away = "n/a";
-		$slot3Away = "n/a";
-
-		if ($p1Choice == $p2Choice) {
-			$winningPlayerID = 0;
-		}
-		else {
-			$slot1Away = ($p1Choice % 5) + 1;
-			$slot3Away = (($p1Choice + 2) % 5) + 1;
-			if ($p2Choice == $slot1Away  || $p2Choice == $slot3Away) {
-				$winningPlayerID = $p1ID;
-			}
-			else {
-				$winningPlayerID = $p2ID;
-			}
-		}
-
-		$playedGame = new PlayedGame();
-		$playedGame->setP1ID($p1ID);
-		$playedGame->setP2ID($p2ID);
-		$playedGame->setP1Choice($p1Choice);
-		$playedGame->setP2Choice($p2Choice);
-		$playedGame->setWinningPlayerID($winningPlayerID);
-
-		$em = $this->getDoctrine()->getManager();
-		$em->persist($playedGame);
-
-		# Save everything to db
-		$em->flush();
-
-		$responseString = <<<EOD
-Game # = {$playedGame->getPlayedGameID()} <br>
-P1 Choice = {$playedGame->getP1Choice()} <br>
-slot1 = {$slot1Away}<br>
-slot3 = {$slot3Away}<br>
-<br>
-P2 Choice = {$playedGame->getP2Choice()} <br>
-Winner = {$playedGame->getWinningPlayerID()} <br><br>
-EOD;
-
-		return new Response($responseString);
-
-    }
 }
