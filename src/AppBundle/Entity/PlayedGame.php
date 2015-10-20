@@ -15,36 +15,40 @@ class PlayedGame
      */
     protected $playedGameID;
 
-
     /**
+     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\JoinColumn(name="p1id", referencedColumnName="player_id")
      * @ORM\Column(type="integer")
      */
     protected $p1ID;
 
-
     /**
+     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\JoinColumn(name="p2id", referencedColumnName="player_id")
      * @ORM\Column(type="integer")
      */
 	protected $p2ID;
 
-
     /**
+     * @ORM\ManyToOne(targetEntity="Choice")
+     * @ORM\JoinColumn(name="p1choice", referencedColumnName="choice_id")
      * @ORM\Column(type="integer")
      */
 	protected $p1Choice;
 
-
     /**
+     * @ORM\ManyToOne(targetEntity="Choice")
+     * @ORM\JoinColumn(name="p2choice", referencedColumnName="choice_id")
      * @ORM\Column(type="integer")
      */
 	protected $p2Choice;
 
-
     /**
+     * @ORM\ManyToOne(targetEntity="Player")
+     * @ORM\JoinColumn(name="winning_player_id", referencedColumnName="player_id")
      * @ORM\Column(type="integer")
      */
 	protected $winningPlayerID;
-
 
 
     /**
