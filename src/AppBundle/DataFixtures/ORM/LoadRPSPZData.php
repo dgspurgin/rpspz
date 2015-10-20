@@ -54,6 +54,7 @@ class LoadRPSPZData implements FixtureInterface
 		$em->persist($choice);
 
 
+/*
 		# 2 Human Wins, Tie, 2 Computer Wins
 		$playedGame = new PlayedGame();
 		$playedGame->setP1ID(1);
@@ -93,6 +94,16 @@ class LoadRPSPZData implements FixtureInterface
 		$playedGame->setP1Choice(5);
 		$playedGame->setP2Choice(2);
 		$playedGame->setWinningPlayerID(2);
+		$em->persist($playedGame);
+*/
+
+		# Player plays self!
+		$playedGame = new PlayedGame();
+		$playedGame->setP1ID(1);
+		$playedGame->setP2ID(1);
+		$playedGame->setP1Choice(1);
+		$playedGame->setP2Choice(2);
+		$playedGame->setWinningPlayerID(1);
 		$em->persist($playedGame);
 
 

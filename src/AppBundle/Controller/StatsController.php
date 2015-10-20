@@ -18,6 +18,9 @@ class StatsController extends Controller
     public function statsAction($p1ID = 1, $p2ID = 2)
     {
 
+		#-------------------------
+		# Get data from repository
+
 		$em = $this->getDoctrine()->getManager();
 
 		# P1Win--Tie--P2Win Totals
@@ -25,45 +28,21 @@ class StatsController extends Controller
 		$p2Wins = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal($p2ID);
 		$ties = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal(0);
 
-
 		# Player 1 Choice Histories
-		$query = $em->createQuery(
-			'SELECT c.choiceID, c.choiceName, COUNT (pg.p1Choice) AS timesChosen
-			FROM AppBundle:Choice c
-			LEFT JOIN AppBundle:PlayedGame pg
-			WHERE c.choiceID = pg.p1Choice AND pg.p1ID = :playerID
-			GROUP BY c.choiceID'
-		)->setParameter(':playerID', $p1ID);
-		$p1ChoiceHistory = $query->getResult();
-		foreach ($p1ChoiceHistory as $index => $row) {
-			$choiceID = $row["choiceID"];
-			$p1ChoiceHistoryIndexedByChoiceID[$choiceID] = $row;
-		}
-
+		$p1ChoiceHistoryIndexedByChoiceID = $em->getRepository('AppBundle:PlayedGame')->playerChoiceHistoryIndexedByChoiceID($p1ID);
 
 		# Player 2 Choice Histories
-		$query = $em->createQuery(
-			'SELECT c.choiceID, c.choiceName, COUNT (pg.p2Choice) AS timesChosen
-			FROM AppBundle:Choice c
-			LEFT JOIN AppBundle:PlayedGame pg
-			WHERE c.choiceID = pg.p2Choice AND pg.p2ID = :playerID
-			GROUP BY c.choiceID'
-		)->setParameter(':playerID', $p2ID);
-		$p2ChoiceHistory = $query->getResult();
-		foreach ($p2ChoiceHistory as $index => $row) {
-			$choiceID = $row["choiceID"];
-			$p2ChoiceHistoryIndexedByChoiceID[$choiceID] = $row;
-		}
+		$p2ChoiceHistoryIndexedByChoiceID = $em->getRepository('AppBundle:PlayedGame')->playerChoiceHistoryIndexedByChoiceID($p2ID);
 
 
-
-		# Display choices in conventional order
-		$conventionalChoiceOrder = array(3, 2, 1, 4, 5);
-
-
-
-		# Display Stats
+		#-------------------------
+		# Display data
 		$responseString = "";
+		$totalChoices = 0;
+
+
+		# Display choices in order humans expect (rock, paper, scissors, ...)
+		$conventionalChoiceOrder = array(3, 2, 1, 4, 5);
 
 
 		$totalChoices = 0;
@@ -81,7 +60,6 @@ EOD;
 		Total Choices = {$totalChoices}<br>
 		<br>
 EOD;
-
 
 
 		$totalChoices = 0;

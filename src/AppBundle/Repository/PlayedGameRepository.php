@@ -24,4 +24,38 @@ class PlayedGameRepository extends \Doctrine\ORM\EntityRepository
 		return $query->getSingleScalarResult();
     }
 
+    public function playerChoiceHistoryIndexedByChoiceID($playerID)
+	{
+		$playerChoiceHistory = self::playerChoiceHistory($playerID);
+
+		$playerChoiceHistoryIndexedByChoiceID = array();
+		foreach ($playerChoiceHistory as $index => $row) {
+			$choiceID = $row["choiceID"];
+			$playerChoiceHistoryIndexedByChoiceID[$choiceID] = $row;
+		}
+
+		return $playerChoiceHistoryIndexedByChoiceID;
+	}
+
+    public function playerChoiceHistory($playerID)
+    {
+		$playerChoiceHistory = array();
+    	$em = $this->getEntityManager();
+
+    	# Make sure every choice is represented even if player has never chosen.
+    	# Make sure you count records where player is player #1 or player #2
+    	# If player plays self, count both times :P
+		$query = $em->createQuery(
+			'SELECT c.choiceID, c.choiceName, COUNT (pg) AS timesChosen
+			FROM AppBundle:Choice c
+			LEFT JOIN AppBundle:PlayedGame pg
+			WHERE (c.choiceID = pg.p1Choice AND pg.p1ID = :playerID) OR
+				  (c.choiceID = pg.p2Choice AND pg.p2ID = :playerID)
+			GROUP BY c.choiceID'
+		)->setParameter(':playerID', $playerID);
+		$playerChoiceHistory = $query->getResult();
+
+    	return $playerChoiceHistory;
+    }
+
 }
