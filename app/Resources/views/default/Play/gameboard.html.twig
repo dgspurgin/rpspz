@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+<table>
+	<tr>
+		<td style='width:33%;valign:top;padding:20px;vertical-align:top;'>
+			<div>Player #1: HUMAN<br></div>
+			
+			<div>
+				{{ form_start(form) }}
+				{{ form_end(form) }}
+			</div>
+
+			<div><h1>{{ p1WinLose }}</h1></div>
+			
+			<div>Choice: {{ p1ChoiceName }}</div>
+		</td>
+		
+		<td style='width:33%;valign:top;padding:20px;vertical-align:top;'>{{ stats | nl2br }}</td>
+		
+		<td style='width:33%;valign:top;padding:20px;vertical-align:top;'>
+			<div>Player #2: COMPUTER</div>
+			
+			<div>
+				{{ form_start(form) }}
+				{{ form_end(form) }}
+			</div>
+
+			<div><h1>{{ p2WinLose }}</h1></div>
+			
+			<div>Choice: {{ p2ChoiceName }}</div>
+		</td>
+	</tr>
+</table>
+
+
+
+{% endblock %}
+
+

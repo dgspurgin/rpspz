@@ -1,15 +1,24 @@
-// src/AppBundle/Controller/LuckyController.php
+<?php
+
 namespace AppBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 
-class LuckyController extends Controller
+class RPSPZController extends Controller
 {
     /**
-     * @Route("/lucky/number")
+     * @Route("/", name="home")
      */
+    public function homeAction()
+    {
+
+        // replace this example code with whatever you need
+        return $this->render('default/index.html.twig');
+    }
+
+
     public function numberAction()
     {
         $number = rand(0, 100);
