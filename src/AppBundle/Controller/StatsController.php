@@ -9,13 +9,28 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
 
+
+/**
+ * @Route(service="stats_controller")
+ */
 class StatsController extends Controller
 {
+
 
     /**
      * @Route("/stats/{p1ID}/{p2ID}", name="stats")
      */
     public function statsAction($p1ID = 1, $p2ID = 2)
+    {
+
+		$responseString = self::stats($p1ID, $p2ID);
+
+		return new Response($responseString);
+
+
+	}
+
+    public function stats($p1ID = 1, $p2ID = 2)
     {
 
 		#-------------------------
@@ -47,35 +62,40 @@ class StatsController extends Controller
 
 		$totalChoices = 0;
 		$responseString .= <<<EOD
-		Player 1 Choice History:<br>
+		Player 1 Choice History:
+
 EOD;
 		foreach ($conventionalChoiceOrder as $choiceID) {
 			$row = $p1ChoiceHistoryIndexedByChoiceID[$choiceID];
 			$responseString .= <<<EOD
-				choice = {$row["choiceName"]},  total = {$row["timesChosen"]} <br>
+				choice = {$row["choiceName"]},  total = {$row["timesChosen"]}
+
 EOD;
 				$totalChoices += $row["timesChosen"];
 		}
 		$responseString .= <<<EOD
-		Total Choices = {$totalChoices}<br>
-		<br>
+		Total Choices = {$totalChoices}
+
+
 EOD;
 
 
 		$totalChoices = 0;
 		$responseString .= <<<EOD
-		Player 2 Choice History:<br>
+		Player 2 Choice History:
+
 EOD;
 		foreach ($conventionalChoiceOrder as $choiceID) {
 			$row = $p2ChoiceHistoryIndexedByChoiceID[$choiceID];
 			$responseString .= <<<EOD
-				choice = {$row["choiceName"]},  total = {$row["timesChosen"]} <br>
+				choice = {$row["choiceName"]},  total = {$row["timesChosen"]}
+
 EOD;
 				$totalChoices += $row["timesChosen"];
 		}
 		$responseString .= <<<EOD
-		Total Choices = {$totalChoices}<br>
-		<br>
+		Total Choices = {$totalChoices}
+
 
 EOD;
 
@@ -83,14 +103,16 @@ EOD;
 
 
 		$responseString .= <<<EOD
-Human Wins = {$p1Wins} <br>
-Ties = {$ties} <br>
-Computer Wins = {$p2Wins}<br>
+Human Wins = {$p1Wins}
+Ties = {$ties}
+Computer Wins = {$p2Wins}
 EOD;
 
-		return new Response($responseString);
+
+		return $responseString;
 
 
 	}
+
 
 }
