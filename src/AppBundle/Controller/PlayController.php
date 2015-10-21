@@ -110,7 +110,7 @@ class PlayController extends Controller
 		}
 
 		$stats_controller = $this->get('stats_controller');
-		$stats = urldecode ($stats_controller->stats($p1ID, $p2ID));
+		$stats = $stats_controller->statsDisplay($p1ID, $p2ID);
 
 		return $this->render('default/Play/gameboard.html.twig', array(
 		        'form' => $form->createView(),

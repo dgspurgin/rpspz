@@ -23,14 +23,14 @@ class StatsController extends Controller
     public function statsAction($p1ID = 1, $p2ID = 2)
     {
 
-		$responseString = self::stats($p1ID, $p2ID);
+		$responseString = self::statsDisplay($p1ID, $p2ID);
 
 		return new Response($responseString);
 
 
 	}
 
-    public function stats($p1ID = 1, $p2ID = 2)
+    public function statsFetch($p1ID = 1, $p2ID = 2)
     {
 
 		#-------------------------
@@ -38,74 +38,133 @@ class StatsController extends Controller
 
 		$em = $this->getDoctrine()->getManager();
 
-		# P1Win--Tie--P2Win Totals
+		# Player Win/Tie/Loss Totals
+		/*
+			If a 3rd player is introduced (or a player is allowed to play self)
+			total for player and totals against a specific player will differ
+		*/
 		$p1Wins = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal($p1ID);
+		$p1Ties = $em->getRepository('AppBundle:PlayedGame')->playerTieTotal($p1ID);
+		$p1Losses = $em->getRepository('AppBundle:PlayedGame')->playerLossTotal($p1ID);
+		$p1WinsAgainstAnother = $em->getRepository('AppBundle:PlayedGame')->playerWinTotalAgainstAnother($p1ID, $p2ID);
+		$p1TiesAgainstAnother = $em->getRepository('AppBundle:PlayedGame')->playerTieTotalAgainstAnother($p1ID, $p2ID);
+		$p1LossesAgainstAnother = $em->getRepository('AppBundle:PlayedGame')->playerLossTotalAgainstAnother($p1ID, $p2ID);
+
+		$stats['winTieLoss']['p1']['wins'] = $p1Wins;
+		$stats['winTieLoss']['p1']['ties'] = $p1Ties;
+		$stats['winTieLoss']['p1']['losses'] = $p1Losses;
+		$stats['winTieLoss']['p1']['winsAgainstAnother'] = $p1WinsAgainstAnother;
+		$stats['winTieLoss']['p1']['tiesAgainstAnother'] = $p1TiesAgainstAnother;
+		$stats['winTieLoss']['p1']['lossesAgainstAnother'] = $p1LossesAgainstAnother;
+
+
 		$p2Wins = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal($p2ID);
-		$ties = $em->getRepository('AppBundle:PlayedGame')->playerWinTotal(0);
+		$p2Ties = $em->getRepository('AppBundle:PlayedGame')->playerTieTotal($p2ID);
+		$p2Losses = $em->getRepository('AppBundle:PlayedGame')->playerLossTotal($p2ID);
+		$p2WinsAgainstAnother = $em->getRepository('AppBundle:PlayedGame')->playerWinTotalAgainstAnother($p2ID, $p1ID);
+		$p2TiesAgainstAnother = $em->getRepository('AppBundle:PlayedGame')->playerTieTotalAgainstAnother($p2ID, $p1ID);
+		$p2LossesAgainstAnother = $em->getRepository('AppBundle:PlayedGame')->playerLossTotalAgainstAnother($p2ID, $p1ID);
 
-		# Player 1 Choice Histories
+		$stats['winTieLoss']['p2']['wins'] = $p2Wins;
+		$stats['winTieLoss']['p2']['ties'] = $p2Ties;
+		$stats['winTieLoss']['p2']['losses'] = $p2Losses;
+		$stats['winTieLoss']['p2']['winsAgainstAnother'] = $p2WinsAgainstAnother;
+		$stats['winTieLoss']['p2']['tiesAgainstAnother'] = $p2TiesAgainstAnother;
+		$stats['winTieLoss']['p2']['lossesAgainstAnother'] = $p2LossesAgainstAnother;
+
+
+
+		# Player Choice Histories
 		$p1ChoiceHistoryIndexedByChoiceID = $em->getRepository('AppBundle:PlayedGame')->playerChoiceHistoryIndexedByChoiceID($p1ID);
+		$stats['choiceHistories']['p1'] = $p1ChoiceHistoryIndexedByChoiceID;
 
-		# Player 2 Choice Histories
 		$p2ChoiceHistoryIndexedByChoiceID = $em->getRepository('AppBundle:PlayedGame')->playerChoiceHistoryIndexedByChoiceID($p2ID);
+		$stats['choiceHistories']['p2'] = $p2ChoiceHistoryIndexedByChoiceID;
 
+		return $stats;
+	}
 
-		#-------------------------
-		# Display data
+	public function statsDisplay($p1ID = 1, $p2ID = 2)
+	{
+		$stats = self::statsFetch($p1ID, $p2ID);
+
 		$responseString = "";
 		$totalChoices = 0;
+
+
+		$responseString .= <<<EOD
+		<div class='player_history_title'>Wins/Tie/Loss History</div>
+		<table class='players_win_tie_loss_totals'>
+			<tr><td>Player 1 Wins</td><td>{$stats['winTieLoss']['p1']['winsAgainstAnother']}</td></tr>
+			<tr><td>Ties</td><td>{$stats['winTieLoss']['p1']['tiesAgainstAnother']}</td></tr>
+			<tr><td>Player 2 Wins</td><td>{$stats['winTieLoss']['p2']['winsAgainstAnother']}</td></tr>
+		</table>
+EOD;
 
 
 		# Display choices in order humans expect (rock, paper, scissors, ...)
 		$conventionalChoiceOrder = array(3, 2, 1, 4, 5);
 
-
 		$totalChoices = 0;
 		$responseString .= <<<EOD
-		Player 1 Choice History:
+		<div class='player_history'>
+			<div class='player_history_title'>Player 1 Choice History:</div>
+			<table class='player_history_choices'>
+				<tr>
+					<th>Choice</th><th>Times Selected</td>
+				</tr>
 
 EOD;
+
 		foreach ($conventionalChoiceOrder as $choiceID) {
-			$row = $p1ChoiceHistoryIndexedByChoiceID[$choiceID];
+			$row = $stats['choiceHistories']['p1'][$choiceID];
 			$responseString .= <<<EOD
-				choice = {$row["choiceName"]},  total = {$row["timesChosen"]}
+				<tr>
+					<td>{$row["choiceName"]}</td><td>{$row["timesChosen"]}</td>
+				</tr>
 
 EOD;
 				$totalChoices += $row["timesChosen"];
 		}
 		$responseString .= <<<EOD
-		Total Choices = {$totalChoices}
-
+				<tr>
+					<td class='choice_total'>Total Choices</td><td>{$totalChoices}</td>
+				</tr>
+			</table>
+		</div>
 
 EOD;
 
 
 		$totalChoices = 0;
 		$responseString .= <<<EOD
-		Player 2 Choice History:
+		<div class='player_history'>
+			<div class='player_history_title'>Player 2 Choice History:</div>
+			<table class='player_history_choices'>
+				<tr>
+					<th>Choice</th><th>Times Selected</td>
+				</tr>
 
 EOD;
 		foreach ($conventionalChoiceOrder as $choiceID) {
-			$row = $p2ChoiceHistoryIndexedByChoiceID[$choiceID];
+			$row = $stats['choiceHistories']['p2'][$choiceID];
 			$responseString .= <<<EOD
-				choice = {$row["choiceName"]},  total = {$row["timesChosen"]}
+				<tr>
+					<td>{$row["choiceName"]}</td><td>{$row["timesChosen"]}</td>
+				</tr>
 
 EOD;
 				$totalChoices += $row["timesChosen"];
 		}
 		$responseString .= <<<EOD
-		Total Choices = {$totalChoices}
+				<tr>
+					<td class='choice_total'>Total Choices</td><td>{$totalChoices}</td>
+				</tr>
+
+			</table>
+		</div>
 
 
-EOD;
-
-
-
-
-		$responseString .= <<<EOD
-Human Wins = {$p1Wins}
-Ties = {$ties}
-Computer Wins = {$p2Wins}
 EOD;
 
 
