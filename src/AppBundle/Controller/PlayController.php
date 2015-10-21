@@ -89,13 +89,6 @@ class PlayController extends Controller
 					$p2WinLose = "Winner";
 				}
 
-
-				$stats = "stuff here for stats";
-
-
-				$stats_controller = $this->get('stats_controller');
-				$stats = urldecode ($stats_controller->stats($p1ID, $p2ID));
-
 				try
 				{
 					# Save game to db
@@ -109,6 +102,9 @@ class PlayController extends Controller
 					$em = $this->getDoctrine()->getManager();
 					$em->persist($playedGame);
 					$em->flush();
+
+					$stats_controller = $this->get('stats_controller');
+					$stats = urldecode ($stats_controller->stats($p1ID, $p2ID));
 
 				} catch (Exception $e) {
 					# Log $e->getMessage()
