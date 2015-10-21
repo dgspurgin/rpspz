@@ -23,6 +23,17 @@ class PlayController extends Controller
     public function playAction(Request $request)
     {
 
+		# Hardwire players for now
+		$p1ID = 1; 		# Human
+		$p2ID = 2; 		# Computer
+
+		$p1Choice = null;
+		$p2Choice = null;
+		$p1WinLose = "--";
+		$p2WinLose = "--";
+		$stats = "";
+		$p1ChoiceName = "";
+		$p2ChoiceName = "";
 
 		$data = array();
     	$form = $this->createFormBuilder($data)
@@ -32,14 +43,7 @@ class PlayController extends Controller
 			->add('save_choice4', 'submit', array('label' => 'Plants'))
 			->add('save_choice5', 'submit', array('label' => 'Zombies'))
 			->getForm();
-
 	    $form->handleRequest($request);
-
-		$p1WinLose = "--";
-		$p2WinLose = "--";
-		$stats = "";
-		$p1ChoiceName = "";
-		$p2ChoiceName = "";
 
 
 		if ($form->isValid()) {
@@ -61,10 +65,6 @@ class PlayController extends Controller
 			}
 
 			if ($p1Choice) {
-
-				# Hardwire players for now
-				$p1ID = 1; 		# Human
-				$p2ID = 2; 		# Computer
 
 				# Top secret algorithm to generate computer's choice :P
 				$p2Choice = self::generateGameChoice();
@@ -103,15 +103,14 @@ class PlayController extends Controller
 					$em->persist($playedGame);
 					$em->flush();
 
-					$stats_controller = $this->get('stats_controller');
-					$stats = urldecode ($stats_controller->stats($p1ID, $p2ID));
-
 				} catch (Exception $e) {
 					# Log $e->getMessage()
 				}
 			}
 		}
 
+		$stats_controller = $this->get('stats_controller');
+		$stats = urldecode ($stats_controller->stats($p1ID, $p2ID));
 
 		return $this->render('default/Play/gameboard.html.twig', array(
 		        'form' => $form->createView(),
@@ -122,18 +121,6 @@ class PlayController extends Controller
 		        'p2ChoiceName' => $p2ChoiceName,
 
 	    ));
-
-
-
-
-
-
-
-
-
-
-
-
 
     }
 
