@@ -74,7 +74,7 @@ PlayedGame
 - p2ID [int]
 - p1Choice [int]
 - p2choice [int]
-- Outcome ["p1", "p2", "tie"] [varchar(3)] (okay to store as strings since hardwireing in 3 possible outcomes for this game)
+- winningPlayerID [int] [0=tie, !0 = winning player's ID]
 
 
 Choice
