@@ -24,6 +24,90 @@ class PlayedGameRepository extends \Doctrine\ORM\EntityRepository
 		return $query->getSingleScalarResult();
     }
 
+    public function playerTieTotal($playerID)
+    {
+		$em = $this->getEntityManager();
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE (pg.p1ID = :playerID OR pg.p2ID = :playerID) AND pg.winningPlayerID = 0'
+		)->setParameter(':playerID', $playerID);
+
+		return $query->getSingleScalarResult();
+    }
+
+
+    public function playerLossTotal($playerID)
+    {
+		$em = $this->getEntityManager();
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE (pg.p1ID = :playerID OR pg.p2ID = :playerID) AND pg.winningPlayerID != :playerID'
+		)->setParameter(':playerID', $playerID);
+
+		return $query->getSingleScalarResult();
+    }
+
+
+
+    public function playerWinTotalAgainstAnother($p1ID, $p2ID)
+    {
+		$em = $this->getEntityManager();
+
+		$parameters = array(
+			':p1ID' => $p1ID,
+			':p2ID' => $p2ID
+		);
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE (pg.p1ID = :p2ID OR pg.p2ID = :p2ID) AND pg.winningPlayerID = :p1ID'
+		)->setParameters($parameters);
+
+		return $query->getSingleScalarResult();
+    }
+
+    public function playerTieTotalAgainstAnother($p1ID, $p2ID)
+    {
+		$em = $this->getEntityManager();
+
+		$parameters = array(
+			':p1ID' => $p1ID,
+			':p2ID' => $p2ID
+		);
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE 	((pg.p1ID = :p1ID AND pg.p2ID = :p2ID) OR (pg.p1ID = :p2ID AND pg.p2ID = :p1ID)) AND
+					pg.winningPlayerID = 0'
+		)->setParameters($parameters);
+
+		return $query->getSingleScalarResult();
+    }
+
+    public function playerLossTotalAgainstAnother($p1ID, $p2ID)
+    {
+		$em = $this->getEntityManager();
+
+		$parameters = array(
+			':p1ID' => $p1ID,
+			':p2ID' => $p2ID
+		);
+
+		$query = $em->createQuery(
+			'SELECT COUNT (pg)
+			FROM AppBundle:PlayedGame pg
+			WHERE (pg.p1ID = :p1ID OR pg.p2ID = :p1ID) AND pg.winningPlayerID = :p2ID'
+		)->setParameters($parameters);
+
+		return $query->getSingleScalarResult();
+    }
+
     public function playerChoiceHistoryIndexedByChoiceID($playerID)
 	{
 		$playerChoiceHistory = self::playerChoiceHistory($playerID);
