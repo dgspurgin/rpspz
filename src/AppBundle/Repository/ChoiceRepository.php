@@ -10,4 +10,20 @@ namespace AppBundle\Repository;
  */
 class ChoiceRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function choiceName($choiceID)
+    {
+		$em = $this->getEntityManager();
+
+		$query = $em->createQuery(
+			'SELECT c.choiceName
+			FROM AppBundle:Choice c
+			WHERE c.choiceID = :choiceID'
+		)->setParameter(':choiceID', $choiceID);
+
+		$row = $query->getResult();
+
+		return $row[0]["choiceName"];
+    }
+
 }
