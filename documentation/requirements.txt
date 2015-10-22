@@ -1,0 +1,37 @@
+We would like you to take this code challenge to see how you utilize Symfony, problem solve and look at your code style.
+
+ 
+
+Build a player versus computer web application version of "Rock Paper Scissors Spock Lizard".
+
+ 
+
+Here's an explanation of how the game works. http://www.samkass.com/theories/RPSSL.html
+
+ 
+
+The general idea of the application is as follows.
+
+ 
+
+A user visits the application and is able to choose between rock, paper, scissors, spock or lizard. The application randomly chooses the computers choice and the user is presented with the computers choice along with who won the battle.
+
+ 
+
+The user should be able to view statistics on how many times the player has won, how many times the computer has won and how many times each has chosen which option (rock, paper, etc...).
+
+ 
+
+Requirements
+
+1.       Create the application using Symfony version 2.6 or above.
+
+2.       Store statistics in an sql database (MySQL or PostgreSQL preferred) using Doctrine.
+
+3.       Utilize GIT for source control and host your repository somewhere where we can access it when you are done. Please commit your code as you develop.
+
+4.       If you have somewhere to deploy the finished application to please do so.
+
+5.       Feel free to go as simple as you want with the front end design, we are more interested in the backend and wont judge you based on how it looks.
+
+6.       Authentication is not a requirement.

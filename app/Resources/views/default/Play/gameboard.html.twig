@@ -1,0 +1,92 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+<div class='buttons'>
+	SHOOT!: {{ form_start(form) }}
+	{{ form_end(form) }}
+</div>
+
+<table class='gameboard'>
+	<tr>
+		<td class='gameboard_section'>
+			<div>Player #1: HUMAN<br></div>
+
+			<div><h1>{{ p1WinLose }}</h1></div>
+			
+			<div>Choice: {{ p1ChoiceName }}</div>			
+
+		</td>
+		
+		<td class='gameboard_section'>{{ stats | raw }}</td>
+		
+		<td class='gameboard_section'>
+			<div>Player #2: COMPUTER</div>
+			
+			<div><h1>{{ p2WinLose }}</h1></div>
+			
+			<div>Choice: {{ p2ChoiceName }}</div>
+		</td>
+	</tr>
+</table>
+
+{% endblock %}
+
+
+
+
+{% block stylesheets %}
+<style>
+body{
+	margin: 0;
+	padding: 0
+}
+.gameboard td.gameboard_section {
+	valign:top;
+	padding:20px;
+	vertical-align:top;
+}
+
+.player_history {
+	padding-bottom:20px;
+}
+
+.player_history_title {
+	font-size:1.25em;
+	text-decoration:underline;
+}
+
+.player_history_choices td {
+	padding:2px;
+}
+
+.player_history_choices th {
+	text-align:left;
+}
+
+.players_win_tie_loss_totals {
+	padding-bottom:20px;	
+}
+
+form {
+	display:inline;
+}
+
+form div {
+	display:inline;
+	margin-right:5px;
+}
+
+button {
+	font-size:1.25em;
+	font-weight:700;
+}
+
+.buttons {
+	background-color:#ffff33;
+	padding:20px;
+}
+
+</style>
+{% endblock %}
+
+
