@@ -1,0 +1,39 @@
+<div class='player_history_title'>Wins/Tie/Loss History</div>
+
+<table class='players_win_tie_loss_totals'>
+	<tr>
+		<td>Player 1 Wins</td>
+		<td>{{totals.p1wins}}</td>
+	</tr>
+	<tr>
+		<td>Ties</td>
+		<td>{{totals.ties}}</td>
+	</tr>
+	<tr>
+		<td>Player 2 Wins</td>
+		<td>{{totals.p2wins}}</td>
+	</tr>
+</table>
+
+
+
+<div class='player_history'>
+	<div class='player_history_title'>Player 1 Choice History:</div>
+	<table class='player_history_choices'>
+		<tr>
+			<th>Choice</th>
+			<th>Times Selected</td>
+		</tr>
+		<tr>
+			<td>{$row["choiceName"]}</td>
+			<td>{$row["timesChosen"]}</td>
+		</tr>
+
+		<tr>
+			<td class='choice_total'>Total Choices</td>
+			<td>{$totalChoices}</td>
+		</tr>
+	</table>
+</div>
+
+

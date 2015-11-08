@@ -84,91 +84,63 @@ class StatsController extends Controller
 		return $stats;
 	}
 
+    public function statsPlayerVsPlayerTotals($p1ID = 1, $p2ID = 2)
+    {
+		$em = $this->getDoctrine()->getManager();
+
+		$player1_vs_player2_totals['p1wins'] = $em->getRepository('AppBundle:PlayedGame')->playerWinTotalAgainstAnother($p1ID, $p2ID);
+		$player1_vs_player2_totals['ties'] = $em->getRepository('AppBundle:PlayedGame')->playerTieTotalAgainstAnother($p1ID, $p2ID);
+		$player1_vs_player2_totals['p2wins'] = $em->getRepository('AppBundle:PlayedGame')->playerWinTotalAgainstAnother($p2ID, $p1ID);
+
+		return $player1_vs_player2_totals;
+	}
+
+    public function statsPlayerChoiceHistory($pID) {
+		$em = $this->getDoctrine()->getManager();
+
+		return $em->getRepository('AppBundle:PlayedGame')->playerChoiceHistoryIndexedByChoiceID($pID);
+	}
+
 	public function statsDisplay($p1ID = 1, $p2ID = 2)
 	{
+
 		$stats = self::statsFetch($p1ID, $p2ID);
 
-		$responseString = "";
-		$totalChoices = 0;
+		$player1_vs_player2_totals['p1wins'] 	= $stats['winTieLoss']['p1']['winsAgainstAnother'];
+		$player1_vs_player2_totals['ties'] 		= $stats['winTieLoss']['p1']['tiesAgainstAnother'];
+		$player1_vs_player2_totals['p2wins'] 	= $stats['winTieLoss']['p2']['winsAgainstAnother'];
 
 
-		$responseString .= <<<EOD
-		<div class='player_history_title'>Wins/Tie/Loss History</div>
-		<table class='players_win_tie_loss_totals'>
-			<tr><td>Player 1 Wins</td><td>{$stats['winTieLoss']['p1']['winsAgainstAnother']}</td></tr>
-			<tr><td>Ties</td><td>{$stats['winTieLoss']['p1']['tiesAgainstAnother']}</td></tr>
-			<tr><td>Player 2 Wins</td><td>{$stats['winTieLoss']['p2']['winsAgainstAnother']}</td></tr>
-		</table>
-EOD;
+		$player1_history['choices'] = null;
+		$player1_history['number'] = 1;
+		$player1_history['totalChoices'] = 0;
+
+		$player1_history['choices'] = null;
+		$player2_history['number'] = 2;
+		$player2_history['totalChoices'] = 0;
 
 
-		# Display choices in order humans expect (rock, paper, scissors, ...)
+		# Order choices in way humans expect
+		# (rock, paper, scissors, ...)
 		$conventionalChoiceOrder = array(3, 2, 1, 4, 5);
 
-		$totalChoices = 0;
-		$responseString .= <<<EOD
-		<div class='player_history'>
-			<div class='player_history_title'>Player 1 Choice History:</div>
-			<table class='player_history_choices'>
-				<tr>
-					<th>Choice</th><th>Times Selected</td>
-				</tr>
-
-EOD;
-
 		foreach ($conventionalChoiceOrder as $choiceID) {
-			$row = $stats['choiceHistories']['p1'][$choiceID];
-			$responseString .= <<<EOD
-				<tr>
-					<td>{$row["choiceName"]}</td><td>{$row["timesChosen"]}</td>
-				</tr>
+			$p1row = $stats['choiceHistories']['p1'][$choiceID];
+			$player1_history['choices'][$choiceID] = $p1row;
+			$player1_history['totalChoices'] += $p1row['timesChosen'];
 
-EOD;
-				$totalChoices += $row["timesChosen"];
+			$p2row = $stats['choiceHistories']['p2'][$choiceID];
+			$player2_history['choices'][$choiceID] = $p2row;
+			$player2_history['totalChoices'] += $p2row['timesChosen'];
+
 		}
-		$responseString .= <<<EOD
-				<tr>
-					<td class='choice_total'>Total Choices</td><td>{$totalChoices}</td>
-				</tr>
-			</table>
-		</div>
 
-EOD;
-
-
-		$totalChoices = 0;
-		$responseString .= <<<EOD
-		<div class='player_history'>
-			<div class='player_history_title'>Player 2 Choice History:</div>
-			<table class='player_history_choices'>
-				<tr>
-					<th>Choice</th><th>Times Selected</td>
-				</tr>
-
-EOD;
-		foreach ($conventionalChoiceOrder as $choiceID) {
-			$row = $stats['choiceHistories']['p2'][$choiceID];
-			$responseString .= <<<EOD
-				<tr>
-					<td>{$row["choiceName"]}</td><td>{$row["timesChosen"]}</td>
-				</tr>
-
-EOD;
-				$totalChoices += $row["timesChosen"];
-		}
-		$responseString .= <<<EOD
-				<tr>
-					<td class='choice_total'>Total Choices</td><td>{$totalChoices}</td>
-				</tr>
-
-			</table>
-		</div>
-
-
-EOD;
-
-
-		return $responseString;
+        return $this->renderView(
+            'default/Stats/stats.html.twig',
+            array('player1_vs_player2_totals' => $player1_vs_player2_totals,
+            		'player1_history' => $player1_history,
+            		'player2_history' => $player2_history)
+        );
 
 
 	}

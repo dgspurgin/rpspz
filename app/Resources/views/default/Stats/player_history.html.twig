@@ -1,0 +1,21 @@
+<div class='player_history'>
+	<div class='player_history_title'>Player {{ player_history.number }} Choice History:</div>
+	<table class='player_history_choices'>
+		<tr>
+			<th>Choice</th>
+			<th>Times Selected</td>
+		</tr>
+
+		{% for key, choice in player_history.choices %}
+		<tr>
+			<td>{{ choice.choiceName }}</td>
+			<td>{{ choice.timesChosen }}</td>
+		</tr>
+		{% endfor %}
+		
+		<tr>
+			<td class='choice_total'>Total Choices</td>
+			<td>{{ player_history.totalChoices }}</td>
+		</tr>
+	</table>
+</div>
